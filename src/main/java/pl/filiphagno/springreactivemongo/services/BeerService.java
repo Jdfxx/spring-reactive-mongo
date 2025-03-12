@@ -1,5 +1,6 @@
 package pl.filiphagno.springreactivemongo.services;
 
+import pl.filiphagno.springreactivemongo.domain.Beer;
 import pl.filiphagno.springreactivemongo.model.BeerDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,5 +17,7 @@ public interface BeerService {
     Mono<BeerDTO> patchBeer(String beerId, BeerDTO beerDTO);
 
     Mono<Void> deleteBeerById(String beerId);
+
+    Mono<BeerDTO> findFirstByBeerName(String beerName);
 
 }
