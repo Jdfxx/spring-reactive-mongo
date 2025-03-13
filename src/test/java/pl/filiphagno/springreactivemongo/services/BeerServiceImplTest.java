@@ -9,6 +9,7 @@ import pl.filiphagno.springreactivemongo.domain.Beer;
 import pl.filiphagno.springreactivemongo.mapper.BeerMapper;
 import pl.filiphagno.springreactivemongo.mapper.BeerMapperImpl;
 import pl.filiphagno.springreactivemongo.model.BeerDTO;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -125,6 +126,23 @@ class BeerServiceImplTest {
 
         await().untilTrue(atomicBoolean);
     }
+
+    @Test
+    void findByBeerStyle() {
+        BeerDTO beerDto = getSavedBeerDto();
+
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+        Flux<BeerDTO> foundDto = beerService.findByBeerStyle(beerDto.getBeerStyle());
+
+        foundDto.subscribe(dto -> {
+            System.out.println(dto.toString());
+            atomicBoolean.set(true);
+        });
+
+        await().untilTrue(atomicBoolean);
+    }
+
+
 
     public BeerDTO getSavedBeerDto(){
         return beerService.saveBeer(Mono.just(getTestBeerDto())).block();
