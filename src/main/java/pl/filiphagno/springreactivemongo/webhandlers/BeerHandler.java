@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.filiphagno.springreactivemongo.domain.Beer;
 import pl.filiphagno.springreactivemongo.model.BeerDTO;
 import pl.filiphagno.springreactivemongo.services.BeerService;
 import reactor.core.publisher.Mono;
 
+import static pl.filiphagno.springreactivemongo.config.BeerRouterConfig.BEER_PATH_ID;
 
 @Component
 @RequiredArgsConstructor
@@ -25,4 +27,19 @@ public class BeerHandler {
                 .body(beerService.getById(request.pathVariable("beerId")), BeerDTO.class);
     }
 
+    public Mono<ServerResponse> createNewBeer(ServerRequest request) {
+        return beerService.saveBeer(request.bodyToMono(BeerDTO.class))
+                .flatMap(beerDTO ->
+                        ServerResponse.created(UriComponentsBuilder
+                                        .fromPath(BEER_PATH_ID)
+                                        .build(beerDTO.getId()))
+                                .build());
+    }
+
+    public Mono<ServerResponse> updateBeerById(ServerRequest request) {
+        return request.bodyToMono(BeerDTO.class)
+                .flatMap(beerDTO -> beerService.updateBeer(request.pathVariable("beerId"), beerDTO))
+                .flatMap(savedDto -> ServerResponse.noContent().build());
+
+    }
 }
