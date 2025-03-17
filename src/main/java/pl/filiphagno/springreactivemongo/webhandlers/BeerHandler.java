@@ -11,9 +11,9 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebInputException;
 import org.springframework.web.util.UriComponentsBuilder;
-import pl.filiphagno.springreactivemongo.domain.Beer;
 import pl.filiphagno.springreactivemongo.model.BeerDTO;
 import pl.filiphagno.springreactivemongo.services.BeerService;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static pl.filiphagno.springreactivemongo.config.BeerRouterConfig.BEER_PATH_ID;
@@ -33,9 +33,17 @@ public class BeerHandler {
         }
     }
 
-    public Mono<ServerResponse> listBeers(ServerRequest request) {
+    public Mono<ServerResponse> listBeers(ServerRequest request){
+        Flux<BeerDTO> flux;
+
+        if (request.queryParam("beerStyle").isPresent()){
+            flux = beerService.findByBeerStyle(request.queryParam("beerStyle").get());
+        } else {
+            flux = beerService.listBeers();
+        }
+
         return ServerResponse.ok()
-                .body(beerService.listBeers(), Beer.class);
+                .body(flux, BeerDTO.class);
     }
 
     public Mono<ServerResponse> getBeerById(ServerRequest request){
