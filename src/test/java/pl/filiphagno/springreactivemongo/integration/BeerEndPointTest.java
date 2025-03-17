@@ -25,7 +25,7 @@ import java.util.List;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @AutoConfigureWebTestClient
-class BeerEndpointTest {
+class BeerEndPointTest {
 
     @Container
     @ServiceConnection
@@ -51,7 +51,7 @@ class BeerEndpointTest {
                 .uri(BeerRouterConfig.BEER_PATH_ID, beerDTO.getId())
                 .body(Mono.just(beerDTO), BeerDTO.class)
                 .exchange()
-                .expectStatus().isNotFound();
+                .expectStatus().isNoContent();
     }
 
     @Test
