@@ -16,7 +16,7 @@ import pl.filiphagno.springreactivemongo.services.BeerService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static pl.filiphagno.springreactivemongo.config.BeerRouterConfig.BEER_PATH_ID;
+import static pl.filiphagno.springreactivemongo.webrouters.BeerRouterConfig.BEER_PATH_ID;
 
 @Component
 @RequiredArgsConstructor

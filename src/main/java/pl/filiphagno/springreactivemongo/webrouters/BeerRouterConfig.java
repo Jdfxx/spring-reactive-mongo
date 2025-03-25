@@ -1,6 +1,11 @@
-package pl.filiphagno.springreactivemongo.config;
+package pl.filiphagno.springreactivemongo.webrouters;
 
+import io.swagger.v3.oas.models.info.Info;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.annotations.RouterOperations;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -20,6 +25,22 @@ public class BeerRouterConfig {
 
     private final BeerHandler beerHandler;
 
+    @Bean
+    public GroupedOpenApi employeesOpenApi(@Value("${springdoc.version}") String appVersion) {
+        String[] paths = { "/employees/**" };
+        return GroupedOpenApi.builder().group("employees")
+                .addOpenApiCustomizer(openApi -> openApi.info(new Info().title("Beer API").version(appVersion)))
+                .pathsToMatch(paths)
+                .build();
+    }
+
+
+    @RouterOperations(
+            {@RouterOperation(path = BEER_PATH, beanClass = BeerHandler.class, beanMethod = "listBeers"),
+                    @RouterOperation(path = BEER_PATH_ID, beanClass = BeerHandler.class, beanMethod = "getBeerById"),
+                    @RouterOperation(path = BEER_PATH, beanClass = BeerHandler.class, beanMethod = "createNewBeer"),
+                    @RouterOperation(path = BEER_PATH_ID, beanClass = BeerHandler.class, beanMethod = "deleteBeerById")}
+    )
     @Bean
     public RouterFunction<ServerResponse> beerRoutes() {
         return route()

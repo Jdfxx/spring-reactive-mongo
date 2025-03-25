@@ -13,7 +13,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import pl.filiphagno.springreactivemongo.config.BeerRouterConfig;
+import pl.filiphagno.springreactivemongo.webrouters.BeerRouterConfig;
 import pl.filiphagno.springreactivemongo.domain.Beer;
 import pl.filiphagno.springreactivemongo.model.BeerDTO;
 import pl.filiphagno.springreactivemongo.services.BeerServiceImplTest;
