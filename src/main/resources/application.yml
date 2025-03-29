@@ -1,6 +1,0 @@
-springdoc:
-  version: '@springdoc.version@'
-  swagger-ui:
-    use-root-path: true
-server:
-  forward-headers-strategy: framework
