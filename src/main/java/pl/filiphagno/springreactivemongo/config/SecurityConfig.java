@@ -1,7 +1,9 @@
 package pl.filiphagno.springreactivemongo.config;
 
+import org.springframework.boot.actuate.autoconfigure.security.reactive.EndpointRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 
@@ -13,27 +15,22 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        return http
-                .authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/actuator/health/**").permitAll()
-                        .pathMatchers("/actuator/info").permitAll()
-                        .anyExchange().authenticated()  // Secure all other endpoints
-                )
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)  // Disable CSRF for simplicity (adjust for your needs)
-                .formLogin(ServerHttpSecurity.FormLoginSpec::disable)  // Disable form login
-                .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)  // Disable basic auth
-                .build();
+    @Order(1)
+    public SecurityWebFilterChain actuatorSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+        http.securityMatcher(EndpointRequest.toAnyEndpoint())
+                .authorizeExchange(authorize -> authorize.anyExchange().permitAll());
+
+        return http.build();
     }
 
     @Bean
+    @Order(2)
     SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http){
-        http
-                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
-                        .pathMatchers("/webjars/swagger-ui/**","/v3/api-docs", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .anyExchange().authenticated())
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(Customizer.withDefaults()));
+        http.authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().authenticated())
+                .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec.jwt(Customizer.withDefaults()))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable);
+
         return http.build();
     }
+
 }

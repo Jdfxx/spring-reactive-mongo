@@ -29,6 +29,8 @@
     <properties>
         <java.version>17</java.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+        <logbook.version>3.9.0</logbook.version>
     </properties>
     <dependencies>
         <dependency>
@@ -125,7 +127,22 @@
         <dependency>
             <groupId>org.zalando</groupId>
             <artifactId>logbook-spring-boot-starter</artifactId>
-            <version>3.9.0</version>
+            <version>${logbook.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-spring-boot-webflux-autoconfigure</artifactId>
+            <version>${logbook.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.zalando</groupId>
+            <artifactId>logbook-logstash</artifactId>
+            <version>${logbook.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash-logback-encoder.version}</version>
         </dependency>
     </dependencies>
 
@@ -152,6 +169,9 @@
                             <version>0.2.0</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <compilerArg>-Amapstruct.defaultComponentModel=spring</compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
