@@ -1,6 +1,8 @@
 package pl.filiphagno.springreactivemongo.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import pl.filiphagno.springreactivemongo.mapper.BeerMapper;
@@ -9,6 +11,7 @@ import pl.filiphagno.springreactivemongo.repository.BeerRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BeerServiceImpl implements BeerService {
@@ -24,6 +27,7 @@ public class BeerServiceImpl implements BeerService {
                 .map(beerMapper::beerToBeerDto);
     }
 
+    @Cacheable(cacheNames = "beerListCache")
     @Override
     public Flux<BeerDTO> listBeers() {
         return beerRepository.findAll()
@@ -43,8 +47,10 @@ public class BeerServiceImpl implements BeerService {
                 .map(beerMapper::beerToBeerDto);
     }
 
+    @Cacheable(cacheNames = "beerCache", key = "#id")
     @Override
     public Mono<BeerDTO> getById(String beerId) {
+        log.info("Get beer by id in service");
         return beerRepository.findById(beerId)
                 .map(beerMapper::beerToBeerDto);
     }
