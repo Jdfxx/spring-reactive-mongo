@@ -2,6 +2,7 @@ package pl.filiphagno.springreactivemongo.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,7 +18,7 @@ import reactor.core.publisher.Mono;
 public class BeerServiceImpl implements BeerService {
 
     private final BeerRepository beerRepository;
-
+    private final CacheManager cacheManager;
     private final BeerMapper beerMapper;
 
 
@@ -36,6 +37,7 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Mono<BeerDTO> saveBeer(Mono<BeerDTO> beerDto) {
+        cacheManager.getCache("beerListCache").clear();
         return beerDto.map(beerMapper::beerDtoToBeer)
                 .flatMap(beerRepository::save)
                 .map(beerMapper::beerToBeerDto);
@@ -101,6 +103,8 @@ public class BeerServiceImpl implements BeerService {
 
     @Override
     public Mono<Void> deleteBeerById(String beerId) {
+        cacheManager.getCache("beerCache").evict(beerId);
+        cacheManager.getCache("beerListCache").clear();
         return beerRepository.deleteById(beerId);
     }
 
